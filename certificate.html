@@ -120,6 +120,7 @@
                     </div>
                 </div>
             </div>
+            <div id="certificate_image"></div>
         </div>
         <div style="height: 100px;"></div>
     </section>
@@ -273,11 +274,13 @@
                     },
                     data: JSON.stringify(param),
                     success: function (data, status, xhr) {
-                        console.log("data", data);
+                        $("#certificate_image").empty();
+
                         var img = "";
                         for (var i = 0; i < data.data.length; i++) {
                             img = img + "<div><img src='" + host + data.data[i].file_original_path + "'/></div>";
-                            $(img).appendTo($("#certificate_search"));
+                            $("#certificate_image").append("<br/>");
+                            $("#certificate_image").append($(img));
                         }
                     },
                     error: function (xhr, errorType, error) {
