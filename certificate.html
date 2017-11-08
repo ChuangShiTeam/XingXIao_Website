@@ -359,11 +359,9 @@
                     data: JSON.stringify(param),
                     success: function (response, status, xhr) {
                         if (response.code == 200) {
-                            var img = "";
                             for (var i = 0; i < response.data.length; i++) {
-                                img = img + "<div><img src='" + host + response.data[i].file_original_path + "'/></div>";
                                 $("#certificate_message").append("<br/>");
-                                $("#certificate_message").append($(img));
+                                $("#certificate_message").append("<div><img src='" + host + response.data[i].file_original_path + "'/></div>");
                             }
                         } else {
                             $("#certificate_message").html("<span style='color: red'>" + response.message + "<span>");
