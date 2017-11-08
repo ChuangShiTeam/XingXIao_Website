@@ -106,6 +106,34 @@
     </section>
     <!-- Contact Us-->
     <section class="section-md last-section bg-white text-center">
+        <div class="shell">
+            <h2>真伪查询</h2>
+            <div class="range range-sm-center range-lg">
+                <div class="cell-sm-10 cell-md-10 cell-lg-8">
+                    <!-- RD Mailform-->
+                    <div class="rd-search search-form-classic">
+                        <div class="form-wrap">
+                            <input class="form-input" id="fwcode" type="text" name="fwcode"
+                                   autocomplete="off">
+                            <label class="form-label" for="fwcode">二维码</label>
+                        </div>
+                        <div class="form-wrap">
+                            <input class="form-input" id="vcode" type="text" name="vcode"
+                                   autocomplete="off">
+                            <label class="form-label" for="vcode">验证码</label>
+                        </div>
+                    </div>
+                    <button id="qrcode_search" class="button button-secondary">查询</button>
+                    <br/>
+                    <br/>
+                    <div id="qrcode_message"></div>
+                </div>
+            </div>
+        </div>
+        <div style="height: 100px;"></div>
+    </section>
+    <!-- Contact Us-->
+    <section class="last-section bg-white text-center">
         <div id="certificate_search" class="shell">
             <h2>授权书查询</h2>
             <div class="range range-sm-center range-lg">
@@ -113,13 +141,14 @@
                     <!-- RD Mailform-->
                     <div class="rd-search search-form-classic">
                         <div class="form-wrap">
-                            <input class="form-input" id="rd-search-form-input" type="text" name="certificate_number"
+                            <input class="form-input" id="certificate_number" type="text" name="certificate_number"
                                    autocomplete="off">
-                            <label class="form-label" for="rd-search-form-input">Search</label>
+                            <label class="form-label" for="certificate_number">Search</label>
                         </div>
                         <button id="search" class="rd-search-submit"></button>
                     </div>
-                    <div id="certificate_image"></div>
+                    <br/>
+                    <div id="certificate_message"></div>
                 </div>
             </div>
         </div>
@@ -244,44 +273,100 @@
 <script src="js/script.js"></script>
 <script type="text/javascript">
     $(function () {
+        $("#qrcode_search").click(function () {
+            $("#qrcode_message").empty();
+
+            var fwcode = $.trim($(" input[ name='fwcode' ] ").val());
+            var vcode = $.trim($(" input[ name='vcode' ] ").val());
+
+            //校验
+            var integer = /^\+?[1-9][0-9]*$/;　　//判断是否为正整数
+            if (fwcode == null || fwcode == undefined || fwcode == "") {
+                $("#qrcode_message").html("<span style='color: red'>请输入有效二维码<span>");
+            } else if (!integer.test(fwcode)) {
+                $("#qrcode_message").html("<span style='color: red'>请输入有效二维码<span>");
+            } else if (vcode == null || vcode == undefined || vcode == "") {
+                $("#qrcode_message").html("<span style='color: red'>请输入有效验证码<span>");
+            } else if (!integer.test(vcode)) {
+                $("#qrcode_message").html("<span style='color: red'>请输入有效验证码<span>");
+            } else {
+                var host = 'http://api.chuangshi.nowui.com';
+                host = 'http://localhost:8080';
+                var param = {
+                    fwcode: fwcode,
+                    vcode: vcode
+                };
+                $.ajax({
+                    type: "POST",
+                    url: host + '/certificate/qrcode/find',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                        'app_id': 'c1af3f1ae00e4e0da9b20f5bd41b4279',
+                        'token': '',
+                        'platform': 'WEB',
+                        'version': '1.0.0'
+                    },
+                    data: JSON.stringify(param),
+                    success: function (response, status, xhr) {
+                        if (response.code == 200) {
+                            $("#qrcode_message").html(JSON.stringify(response.data));
+                        } else {
+                            $("#qrcode_message").html(response.message);
+                        }
+                    },
+                    error: function (xhr, errorType, error) {
+
+                    },
+                    complete: function (xhr, status) {
+
+                    }
+                });
+            }
+        });
+
         $("#search").click(function () {
+            $("#certificate_message").empty();
+
             var certificate_number = $.trim($(" input[ name='certificate_number' ] ").val());
             //var certificate_number = document.getElementById("rd-search-form-input");
 
             //校验
             var integer = /^\+?[1-9][0-9]*$/;　　//判断是否为正整数
             if (certificate_number == null || certificate_number == undefined || certificate_number == "") {
-                alert("请输入有效证书编号！");
+                $("#certificate_message").html("<span style='color: red'>请输入有效证书编号<span>");
             } else if (!integer.test(certificate_number)) {
-                alert("请输入有效证书编号！");
+                $("#certificate_message").html("<span style='color: red'>请输入有效证书编号<span>");
             } else if (certificate_number.length != 12) {
-                alert("请输入有效证书编号！");
+                $("#certificate_message").html("<span style='color: red'>请输入有效证书编号<span>");
             } else {
-                // var host  = 'http://localhost:8080/';
-                var host = 'http://api.chuangshi.nowui.com/';
+                 var host  = 'http://localhost:8080';
+//                var host = 'http://api.chuangshi.nowui.com';
                 var param = {
-                    app_id: 'c1af3f1ae00e4e0da9b20f5bd41b4279',
                     certificate_number: certificate_number
                 };
                 $.ajax({
                     type: "POST",
-                    url: host + 'certificate/website/find',
+                    url: host + '/certificate/website/find',
                     headers: {
                         'Accept': 'application/json',
                         'Content-Type': 'application/json',
+                        'app_id': 'c1af3f1ae00e4e0da9b20f5bd41b4279',
                         'token': '',
                         'platform': 'WEB',
                         'version': '1.0.0'
                     },
                     data: JSON.stringify(param),
-                    success: function (data, status, xhr) {
-                        $("#certificate_image").empty();
-
-                        var img = "";
-                        for (var i = 0; i < data.data.length; i++) {
-                            img = img + "<div><img src='" + host + data.data[i].file_original_path + "'/></div>";
-                            $("#certificate_image").append("<br/>");
-                            $("#certificate_image").append($(img));
+                    success: function (response, status, xhr) {
+                        if (response.code == 200) {
+                            var img = "";
+                            for (var i = 0; i < response.data.length; i++) {
+                                img = img + "<div><img src='" + host + response.data[i].file_original_path + "'/></div>";
+                                $("#certificate_message").append("<br/>");
+                                $("#certificate_message").append($(img));
+                            }
+                        } else {
+                            $("#certificate_message").html("<span style='color: red'>" + response.message + "<span>");
                         }
                     },
                     error: function (xhr, errorType, error) {
