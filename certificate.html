@@ -126,7 +126,9 @@
                     <button id="qrcode_search" class="button button-secondary">查询</button>
                     <br/>
                     <br/>
-                    <div id="qrcode_message"></div>
+                    <div id="qrcode_message">
+
+                    </div>
                 </div>
             </div>
         </div>
@@ -274,24 +276,16 @@
 <script type="text/javascript">
     $(function () {
         $("#qrcode_search").click(function () {
-            $("#qrcode_message").empty();
+            $("#qrcode_message").html('正在加载...');
 
             var fwcode = $.trim($(" input[ name='fwcode' ] ").val());
             var vcode = $.trim($(" input[ name='vcode' ] ").val());
 
             //校验
             var integer = /^\+?[1-9][0-9]*$/;　　//判断是否为正整数
-            if (fwcode == null || fwcode == undefined || fwcode == "") {
-                $("#qrcode_message").html("<span style='color: red'>请输入有效二维码<span>");
-            } else if (!integer.test(fwcode)) {
-                $("#qrcode_message").html("<span style='color: red'>请输入有效二维码<span>");
-            } else if (vcode == null || vcode == undefined || vcode == "") {
-                $("#qrcode_message").html("<span style='color: red'>请输入有效验证码<span>");
-            } else if (!integer.test(vcode)) {
-                $("#qrcode_message").html("<span style='color: red'>请输入有效验证码<span>");
-            } else {
+            if (true) {
                 var host = 'http://api.chuangshi.nowui.com';
-                host = 'http://localhost:8080';
+                // host = 'http://localhost:8080';
                 var param = {
                     fwcode: fwcode,
                     vcode: vcode
@@ -310,7 +304,12 @@
                     data: JSON.stringify(param),
                     success: function (response, status, xhr) {
                         if (response.code == 200) {
-                            $("#qrcode_message").html(JSON.stringify(response.data));
+                            var html = '<div class="alert alert-success text-left" role="alert">';
+                            html += '<p><strong>查询结果：</strong>' + response.data.QueryResult + '</p>';
+                            html += '<p><strong>公司名称：</strong>' + response.data.unitname + '</p>';
+                            html += '<p><strong>品牌名称：</strong>' + response.data.brand + '</p>';
+                            html += '</div>';
+                            $("#qrcode_message").html(html);
                         } else {
                             $("#qrcode_message").html(response.message);
                         }
@@ -326,7 +325,7 @@
         });
 
         $("#search").click(function () {
-            $("#certificate_message").empty();
+            $("#certificate_message").html('正在加载...');
 
             var certificate_number = $.trim($(" input[ name='certificate_number' ] ").val());
             //var certificate_number = document.getElementById("rd-search-form-input");
@@ -340,8 +339,8 @@
             } else if (certificate_number.length != 12) {
                 $("#certificate_message").html("<span style='color: red'>请输入有效证书编号<span>");
             } else {
-                 var host  = 'http://localhost:8080';
-//                var host = 'http://api.chuangshi.nowui.com';
+                 // var host  = 'http://localhost:8080';
+               var host = 'http://api.chuangshi.nowui.com';
                 var param = {
                     certificate_number: certificate_number
                 };
